@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -15,18 +16,18 @@ func main() {
 	fmt.Println("Read sucessfully")
 	lines := strings.Split(string(body), "\n")
 
-	acctualSum, max := 0, 0
+	acctualSum, maxes := 0, []int{0, 0, 0}
 	for i := 0; i < len(lines); i++ {
 		if lines[i] == "" {
-			if acctualSum > max {
-				max = acctualSum
+			if isBiggerThanAny(maxes, acctualSum) {
+				replaceLastAndSort(maxes, acctualSum)
 			}
 			acctualSum = 0
 		} else {
 			acctualSum += tryParse(lines[i])
 		}
 	}
-	fmt.Println("Max is: ", max)
+	fmt.Println("Max is: ", sum(maxes))
 }
 
 func tryParse(value string) int {
@@ -36,4 +37,26 @@ func tryParse(value string) int {
 		return 0
 	}
 
+}
+
+func isBiggerThanAny(arr []int, val int) bool {
+	for i := 0; i < len(arr); i++ {
+		if val > arr[i] {
+			return true
+		}
+	}
+	return false
+}
+
+func replaceLastAndSort(arr []int, val int) {
+	arr[0] = val
+	sort.Ints(arr)
+}
+
+func sum(arr []int) int {
+	sum := 0
+	for _, valueInt := range arr {
+		sum += valueInt
+	}
+	return sum
 }
