@@ -29,6 +29,43 @@ func (round Round) getPoints() int {
 	return round.getOutcome() + int(round.response)
 }
 
+func (round Round) getPlayedSign() HandShape {
+	if round.response == Rock {
+		return getLoose(round.played)
+	} else if round.response == Paper { // draw
+		return getDraw(round.played)
+	} else { // win
+		return getWin(round.played)
+	}
+}
+
+func getLoose(played HandShape) HandShape {
+	if played == Rock {
+		return Scissors
+	} else if played == Paper {
+		return Rock
+	} else {
+		return Paper
+	}
+}
+
+func getDraw(played HandShape) HandShape { return played }
+
+func getWin(played HandShape) HandShape {
+	if played == Rock {
+		return Paper
+	} else if played == Paper {
+		return Scissors
+	} else {
+		return Rock
+	}
+}
+
+func (round Round) getPointsFromRoundEnd() int {
+	round.response = round.getPlayedSign()
+	return round.getOutcome() + int(round.response)
+}
+
 type HandShape int
 
 const (
@@ -39,8 +76,6 @@ const (
 
 func main() {
 	body, err := os.ReadFile("E:\\sources\\advent-of-code-22-go\\cmd\\Day2\\input.txt")
-	// body := "A Y\nB X\nC Z"
-	// body := "A Z"
 	if err != nil {
 		fmt.Println("unable to read file: %v", err)
 	}
@@ -48,7 +83,7 @@ func main() {
 	round := parseMatch(string(body))
 	total := 0
 	for i := 0; i < len(round); i++ {
-		total += round[i].getPoints()
+		total += round[i].getPointsFromRoundEnd()
 	}
 	fmt.Println(total)
 
@@ -71,9 +106,9 @@ func parseMatch(match string) []Round {
 func getShapeValue(shape string) HandShape {
 	if shape == "A" || shape == "X" {
 		return Rock
-	} else if shape == "B" || shape == "Y" {
+	} else if shape == "B" || shape == "Y" { //draw
 		return Paper
 	} else {
-		return Scissors
+		return Scissors // win
 	}
 }
